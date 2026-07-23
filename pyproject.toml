@@ -4,5 +4,9 @@ version = "0.1.0"
 description = "Create ground truth dataset using PlurAI API"
 requires-python = ">=3.12"
 dependencies = [
+    "pronto>=2.7.3",
+    "pyyaml>=6.0.3",
+    "rdflib>=7.6.0",
+    "requests>=2.34.2",
     "ster>=0.9.6",
 ]
