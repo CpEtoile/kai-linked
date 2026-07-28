@@ -10,3 +10,7 @@
 
 # P2P Radicle Coding
 - https://radicle.dev/
+
+
+# Playwright test
+- https://playwright.dev/docs/intro
