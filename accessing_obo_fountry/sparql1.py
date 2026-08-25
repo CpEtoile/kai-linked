@@ -22,9 +22,10 @@ WHERE {
     <http://purl.obolibrary.org/obo/GO_0008150>
         ?predicate ?object .
 }
+limit 4
 """
 
 for row in g.query(q2):
-    print(f"row start------------------------{row.label}----------")
+    print(f"row start---------------------------------")
     print(row)
-    print(f"row end------------------------{row.label}----------")
+    print(f"row end------------------------------")
