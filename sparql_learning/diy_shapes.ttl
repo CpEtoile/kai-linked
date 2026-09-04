@@ -1,0 +1,109 @@
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix diy: <https://example.org/diy#> .
+@prefix diy-shapes: <https://example.org/diy/shapes#> .
+
+#################################################################
+# 1. SKOS Taxonomy Shapes (diy_garden_taxonomy & diy_tools_taxonomy)
+#################################################################
+
+diy-shapes:ConceptSchemeShape
+    a sh:NodeShape ;
+    sh:targetClass skos:ConceptScheme ;
+    sh:property [
+        sh:path skos:prefLabel ;
+        sh:minCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message "A ConceptScheme must have at least one preferred string label." ;
+    ] ;
+    sh:property [
+        sh:path skos:hasTopConcept ;
+        sh:minCount 1 ;
+        sh:class skos:Concept ;
+        sh:message "A ConceptScheme must link to valid SKOS Concepts via skos:hasTopConcept." ;
+    ] .
+
+diy-shapes:ConceptShape
+    a sh:NodeShape ;
+    sh:targetClass skos:Concept ;
+    sh:property [
+        sh:path skos:prefLabel ;
+        sh:minCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message "Every Concept must have at least one english/string skos:prefLabel." ;
+    ] ;
+    sh:property [
+        sh:path skos:broader ;
+        sh:or (
+            [ sh:class skos:Concept ]
+            [ sh:class skos:ConceptScheme ]
+        ) ;
+        sh:message "skos:broader targets must be a skos:Concept or skos:ConceptScheme." ;
+    ] .
+
+#################################################################
+# 2. Ontology Core Class Shapes (diy_ontology.owl.ttl)
+#################################################################
+
+diy-shapes:ProjectShape
+    a sh:NodeShape ;
+    sh:targetClass diy:Project ;
+    sh:property [
+        sh:path diy:projectName ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message "A Project must have exactly one string project name." ;
+    ] ;
+    sh:property [
+        sh:path diy:estimatedDurationMinutes ;
+        sh:datatype xsd:nonNegativeInteger ;
+        sh:message "Duration in minutes must be a non-negative integer." ;
+    ] ;
+    sh:property [
+        sh:path diy:difficultyLevel ;
+        sh:datatype xsd:string ;
+        sh:message "Difficulty level must be a string." ;
+    ] ;
+    sh:property [
+        sh:path diy:usesTool ;
+        sh:class diy:Tool ;
+        sh:message "Values of diy:usesTool must be instances of diy:Tool." ;
+    ] ;
+    sh:property [
+        sh:path diy:usesMaterial ;
+        sh:class diy:Material ;
+        sh:message "Values of diy:usesMaterial must be instances of diy:Material." ;
+    ] ;
+    sh:property [
+        sh:path diy:performedIn ;
+        sh:class diy:Location ;
+        sh:message "Values of diy:performedIn must be instances of diy:Location." ;
+    ] .
+
+diy-shapes:GardenActivityShape
+    a sh:NodeShape ;
+    sh:targetClass diy:GardenActivity ;
+    sh:property [
+        sh:path diy:usesGardenTool ;
+        sh:class diy:GardenTool ;
+        sh:message "diy:usesGardenTool must link to a diy:GardenTool instance." ;
+    ] ;
+    sh:property [
+        sh:path diy:involvesPlant ;
+        sh:class diy:Plant ;
+        sh:message "diy:involvesPlant must link to a diy:Plant instance." ;
+    ] .
+
+diy-shapes:SafetyRequirementShape
+    a sh:NodeShape ;
+    sh:targetClass diy:SafetyRequirement ;
+    sh:property [
+        sh:path diy:hasDescription ;
+        sh:minCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message "Safety requirements must include a text description." ;
+    ] .

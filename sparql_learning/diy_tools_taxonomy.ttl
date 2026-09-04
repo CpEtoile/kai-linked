@@ -1,0 +1,95 @@
+@prefix diy: <https://example.org/diy/tools#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+diy:ToolsTaxonomy a skos:ConceptScheme ;
+    skos:prefLabel "DIY Tools Taxonomy"@en ;
+    skos:hasTopConcept diy:HandTools, diy:PowerTools, diy:MeasuringTools,
+        diy:FasteningTools, diy:CuttingTools, diy:SafetyEquipment,
+        diy:FinishingTools, diy:WorkshopEquipment .
+
+diy:HandTools a skos:Concept ;
+    skos:prefLabel "Hand Tools"@en ;
+    skos:definition "Tools primarily operated by hand without a powered motor."@en ;
+    skos:broader diy:ToolsTaxonomy ;
+    skos:narrower diy:Hammer, diy:Screwdriver, diy:Pliers, diy:Wrench,
+        diy:Chisel, diy:HandSaw, diy:File .
+
+diy:PowerTools a skos:Concept ;
+    skos:prefLabel "Power Tools"@en ;
+    skos:definition "Tools powered by electricity, batteries, or compressed air."@en ;
+    skos:broader diy:ToolsTaxonomy ;
+    skos:narrower diy:Drill, diy:ImpactDriver, diy:CircularSaw,
+        diy:Jigsaw, diy:OrbitalSander, diy:Router .
+
+diy:MeasuringTools a skos:Concept ;
+    skos:prefLabel "Measuring and Layout Tools"@en ;
+    skos:broader diy:ToolsTaxonomy ;
+    skos:narrower diy:TapeMeasure, diy:SpiritLevel, diy:CombinationSquare,
+        diy:Caliper, diy:MarkingGauge .
+
+diy:FasteningTools a skos:Concept ;
+    skos:prefLabel "Fastening Tools"@en ;
+    skos:broader diy:ToolsTaxonomy ;
+    skos:narrower diy:Screwdriver, diy:Wrench, diy:StapleGun,
+        diy:RivetTool .
+
+diy:CuttingTools a skos:Concept ;
+    skos:prefLabel "Cutting Tools"@en ;
+    skos:broader diy:ToolsTaxonomy ;
+    skos:narrower diy:UtilityKnife, diy:HandSaw, diy:TinSnips,
+        diy:PruningShears .
+
+diy:SafetyEquipment a skos:Concept ;
+    skos:prefLabel "Safety Equipment"@en ;
+    skos:broader diy:ToolsTaxonomy ;
+    skos:narrower diy:SafetyGlasses, diy:HearingProtection,
+        diy:DustMask, diy:WorkGloves .
+
+diy:FinishingTools a skos:Concept ;
+    skos:prefLabel "Finishing Tools"@en ;
+    skos:broader diy:ToolsTaxonomy ;
+    skos:narrower diy:PaintBrush, diy:PaintRoller, diy:Sandpaper,
+        diy:CaulkingGun .
+
+diy:WorkshopEquipment a skos:Concept ;
+    skos:prefLabel "Workshop Equipment"@en ;
+    skos:broader diy:ToolsTaxonomy ;
+    skos:narrower diy:Workbench, diy:BenchVise, diy:Clamps,
+        diy:Toolbox .
+
+diy:Hammer a skos:Concept ; skos:prefLabel "Hammer"@en ; skos:broader diy:HandTools .
+diy:Screwdriver a skos:Concept ; skos:prefLabel "Screwdriver"@en ; skos:broader diy:HandTools, diy:FasteningTools .
+diy:Pliers a skos:Concept ; skos:prefLabel "Pliers"@en ; skos:broader diy:HandTools .
+diy:Wrench a skos:Concept ; skos:prefLabel "Wrench"@en ; skos:broader diy:HandTools, diy:FasteningTools .
+diy:Chisel a skos:Concept ; skos:prefLabel "Chisel"@en ; skos:broader diy:HandTools .
+diy:HandSaw a skos:Concept ; skos:prefLabel "Hand Saw"@en ; skos:broader diy:HandTools, diy:CuttingTools .
+diy:File a skos:Concept ; skos:prefLabel "File"@en ; skos:broader diy:HandTools .
+diy:Drill a skos:Concept ; skos:prefLabel "Drill"@en ; skos:broader diy:PowerTools .
+diy:ImpactDriver a skos:Concept ; skos:prefLabel "Impact Driver"@en ; skos:broader diy:PowerTools .
+diy:CircularSaw a skos:Concept ; skos:prefLabel "Circular Saw"@en ; skos:broader diy:PowerTools .
+diy:Jigsaw a skos:Concept ; skos:prefLabel "Jigsaw"@en ; skos:broader diy:PowerTools .
+diy:OrbitalSander a skos:Concept ; skos:prefLabel "Orbital Sander"@en ; skos:broader diy:PowerTools .
+diy:Router a skos:Concept ; skos:prefLabel "Router"@en ; skos:broader diy:PowerTools .
+diy:TapeMeasure a skos:Concept ; skos:prefLabel "Tape Measure"@en ; skos:broader diy:MeasuringTools .
+diy:SpiritLevel a skos:Concept ; skos:prefLabel "Spirit Level"@en ; skos:broader diy:MeasuringTools .
+diy:CombinationSquare a skos:Concept ; skos:prefLabel "Combination Square"@en ; skos:broader diy:MeasuringTools .
+diy:Caliper a skos:Concept ; skos:prefLabel "Caliper"@en ; skos:broader diy:MeasuringTools .
+diy:MarkingGauge a skos:Concept ; skos:prefLabel "Marking Gauge"@en ; skos:broader diy:MeasuringTools .
+diy:StapleGun a skos:Concept ; skos:prefLabel "Staple Gun"@en ; skos:broader diy:FasteningTools .
+diy:RivetTool a skos:Concept ; skos:prefLabel "Rivet Tool"@en ; skos:broader diy:FasteningTools .
+diy:UtilityKnife a skos:Concept ; skos:prefLabel "Utility Knife"@en ; skos:broader diy:CuttingTools .
+diy:TinSnips a skos:Concept ; skos:prefLabel "Tin Snips"@en ; skos:broader diy:CuttingTools .
+diy:PruningShears a skos:Concept ; skos:prefLabel "Pruning Shears"@en ; skos:broader diy:CuttingTools .
+diy:SafetyGlasses a skos:Concept ; skos:prefLabel "Safety Glasses"@en ; skos:broader diy:SafetyEquipment .
+diy:HearingProtection a skos:Concept ; skos:prefLabel "Hearing Protection"@en ; skos:broader diy:SafetyEquipment .
+diy:DustMask a skos:Concept ; skos:prefLabel "Dust Mask"@en ; skos:broader diy:SafetyEquipment .
+diy:WorkGloves a skos:Concept ; skos:prefLabel "Work Gloves"@en ; skos:broader diy:SafetyEquipment .
+diy:PaintBrush a skos:Concept ; skos:prefLabel "Paint Brush"@en ; skos:broader diy:FinishingTools .
+diy:PaintRoller a skos:Concept ; skos:prefLabel "Paint Roller"@en ; skos:broader diy:FinishingTools .
+diy:Sandpaper a skos:Concept ; skos:prefLabel "Sandpaper"@en ; skos:broader diy:FinishingTools .
+diy:CaulkingGun a skos:Concept ; skos:prefLabel "Caulking Gun"@en ; skos:broader diy:FinishingTools .
+diy:Workbench a skos:Concept ; skos:prefLabel "Workbench"@en ; skos:broader diy:WorkshopEquipment .
+diy:BenchVise a skos:Concept ; skos:prefLabel "Bench Vise"@en ; skos:broader diy:WorkshopEquipment .
+diy:Clamps a skos:Concept ; skos:prefLabel "Clamps"@en ; skos:broader diy:WorkshopEquipment .
+diy:Toolbox a skos:Concept ; skos:prefLabel "Toolbox"@en ; skos:broader diy:WorkshopEquipment .

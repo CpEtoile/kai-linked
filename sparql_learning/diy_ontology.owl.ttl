@@ -1,0 +1,241 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix diy: <https://my-adeo.com/diy#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+diy:BuildRaisedBed a owl:NamedIndividual,
+        diy:Project ;
+    diy:difficultyLevel "Intermediate"@en ;
+    diy:estimatedDurationMinutes 180 ;
+    diy:hasSafetyRequirement diy:EyeProtectionRequired ;
+    diy:performedIn diy:Garden ;
+    diy:projectName "Build a Raised Garden Bed"@en ;
+    diy:requiresSafetyEquipment diy:SafetyGlasses ;
+    diy:usesMaterial diy:Lumber,
+        diy:WoodScrews ;
+    diy:usesTool diy:Drill,
+        diy:HandSaw,
+        diy:TapeMeasure .
+
+diy:DIYOntology a owl:Ontology ;
+    rdfs:label "DIY Knowledge Ontology"@en ;
+    dcterms:description "DIY Knowledge Ontology" ;
+    dcterms:title "DIY Knowledge Ontology" ;
+    rdfs:comment "An OWL ontology for describing DIY projects, tools, materials, skills, garden activities, and safety requirements."@en ;
+    owl:versionInfo "1.0" .
+
+diy:FasteningTool a owl:Class ;
+    rdfs:label "Fastening Tool"@en ;
+    rdfs:subClassOf diy:Tool .
+
+diy:HandTool a owl:Class ;
+    rdfs:label "Hand Tool"@en ;
+    rdfs:subClassOf diy:Tool .
+
+diy:Planting a owl:NamedIndividual,
+        diy:GardenActivity ;
+    rdfs:label "Planting"@en ;
+    diy:involvesPlant diy:Plant ;
+    diy:usesGardenTool diy:GardenTrowel .
+
+diy:Plastic a owl:Class ;
+    rdfs:label "Plastic"@en ;
+    rdfs:subClassOf diy:Material .
+
+diy:SoilMaterial a owl:Class ;
+    rdfs:label "Soil Material"@en ;
+    rdfs:subClassOf diy:Material .
+
+diy:Workshop a owl:Class ;
+    rdfs:label "Workshop"@en ;
+    rdfs:subClassOf diy:Location .
+
+diy:alternativeTo a owl:ObjectProperty ;
+    rdfs:label "alternative to"@en ;
+    rdfs:domain diy:Tool ;
+    rdfs:range diy:Tool .
+
+diy:difficultyLevel a owl:DatatypeProperty ;
+    rdfs:label "difficulty level"@en ;
+    rdfs:domain diy:Project ;
+    rdfs:range xsd:string .
+
+diy:estimatedDurationMinutes a owl:DatatypeProperty ;
+    rdfs:label "estimated duration in minutes"@en ;
+    rdfs:domain diy:Project ;
+    rdfs:range xsd:nonNegativeInteger .
+
+diy:hasDescription a owl:DatatypeProperty ;
+    rdfs:label "description"@en ;
+    rdfs:domain diy:DIYEntity ;
+    rdfs:range xsd:string .
+
+diy:hasSafetyRequirement a owl:ObjectProperty ;
+    rdfs:label "has safety requirement"@en ;
+    rdfs:domain diy:Project ;
+    rdfs:range diy:SafetyRequirement .
+
+diy:involvesPlant a owl:ObjectProperty ;
+    rdfs:label "involves plant"@en ;
+    rdfs:domain diy:GardenActivity ;
+    rdfs:range diy:Plant .
+
+diy:partOfProject a owl:ObjectProperty ;
+    rdfs:label "part of project"@en ;
+    rdfs:domain diy:GardenActivity ;
+    rdfs:range diy:Project .
+
+diy:performedIn a owl:ObjectProperty ;
+    rdfs:label "performed in"@en ;
+    rdfs:domain diy:Project ;
+    rdfs:range diy:Location .
+
+diy:projectName a owl:DatatypeProperty ;
+    rdfs:label "project name"@en ;
+    rdfs:domain diy:Project ;
+    rdfs:range xsd:string .
+
+diy:quantity a owl:DatatypeProperty ;
+    rdfs:label "quantity"@en ;
+    rdfs:domain diy:DIYEntity ;
+    rdfs:range xsd:decimal .
+
+diy:requiresSafetyEquipment a owl:ObjectProperty ;
+    rdfs:label "requires safety equipment"@en ;
+    rdfs:domain diy:Project ;
+    rdfs:range diy:SafetyEquipment .
+
+diy:requiresSkill a owl:ObjectProperty ;
+    rdfs:label "requires skill"@en ;
+    rdfs:domain diy:Project ;
+    rdfs:range diy:Skill .
+
+diy:suitableFor a owl:ObjectProperty ;
+    rdfs:label "suitable for"@en ;
+    rdfs:domain diy:Tool ;
+    rdfs:range diy:Project .
+
+diy:unit a owl:DatatypeProperty ;
+    rdfs:label "unit"@en ;
+    rdfs:domain diy:DIYEntity ;
+    rdfs:range xsd:string .
+
+diy:usesGardenTool a owl:ObjectProperty ;
+    rdfs:label "uses garden tool"@en ;
+    rdfs:domain diy:GardenActivity ;
+    rdfs:range diy:GardenTool ;
+    rdfs:subPropertyOf diy:usesTool .
+
+diy:usesMaterial a owl:ObjectProperty ;
+    rdfs:label "uses material"@en ;
+    rdfs:domain diy:Project ;
+    rdfs:range diy:Material .
+
+diy:CuttingTool a owl:Class ;
+    rdfs:label "Cutting Tool"@en ;
+    rdfs:subClassOf diy:Tool .
+
+diy:Drill a owl:NamedIndividual,
+        diy:PowerTool ;
+    rdfs:label "Drill"@en .
+
+diy:EyeProtectionRequired a owl:NamedIndividual,
+        diy:SafetyRequirement ;
+    rdfs:label "Eye protection required"@en ;
+    diy:hasDescription "Wear suitable eye protection when a project can produce flying particles or debris."@en .
+
+diy:Garden a owl:Class ;
+    rdfs:label "Garden"@en ;
+    rdfs:subClassOf diy:Location .
+
+diy:GardenTrowel a owl:NamedIndividual,
+        diy:GardenTool ;
+    rdfs:label "Garden Trowel"@en .
+
+diy:HandSaw a owl:NamedIndividual,
+        diy:CuttingTool ;
+    rdfs:label "Hand Saw"@en .
+
+diy:Lumber a owl:NamedIndividual,
+        diy:Wood ;
+    rdfs:label "Lumber"@en .
+
+diy:MeasuringTool a owl:Class ;
+    rdfs:label "Measuring Tool"@en ;
+    rdfs:subClassOf diy:Tool .
+
+diy:Metal a owl:Class ;
+    rdfs:label "Metal"@en ;
+    rdfs:isDefinedBy <q> ;
+    rdfs:subClassOf diy:Material .
+
+diy:PowerTool a owl:Class ;
+    rdfs:label "Power Tool"@en ;
+    rdfs:subClassOf diy:Tool .
+
+diy:SafetyGlasses a owl:NamedIndividual,
+        diy:SafetyEquipment ;
+    rdfs:label "Safety Glasses"@en .
+
+diy:Skill a owl:Class ;
+    rdfs:label "DIY Skill"@en ;
+    rdfs:subClassOf diy:DIYEntity .
+
+diy:TapeMeasure a owl:NamedIndividual,
+        diy:MeasuringTool ;
+    rdfs:label "Tape Measure"@en .
+
+diy:Wood a owl:Class ;
+    rdfs:label "Wood"@en ;
+    rdfs:subClassOf diy:Material .
+
+diy:WoodScrews a owl:NamedIndividual,
+        diy:Metal ;
+    rdfs:label "Wood Screws"@en .
+
+diy:usesTool a owl:ObjectProperty ;
+    rdfs:label "uses tool"@en ;
+    rdfs:domain diy:Project ;
+    rdfs:range diy:Tool .
+
+diy:GardenTool a owl:Class ;
+    rdfs:label "Garden Tool"@en ;
+    rdfs:subClassOf diy:Tool .
+
+diy:Plant a owl:Class ;
+    rdfs:label "Plant"@en ;
+    rdfs:subClassOf diy:DIYEntity .
+
+diy:SafetyEquipment a owl:Class ;
+    rdfs:label "Safety Equipment"@en ;
+    rdfs:subClassOf diy:DIYEntity .
+
+diy:SafetyRequirement a owl:Class ;
+    rdfs:label "Safety Requirement"@en ;
+    rdfs:subClassOf diy:DIYEntity .
+
+diy:Location a owl:Class ;
+    rdfs:label "DIY Location"@en ;
+    rdfs:subClassOf diy:DIYEntity .
+
+diy:GardenActivity a owl:Class ;
+    rdfs:label "Garden Activity"@en ;
+    rdfs:subClassOf diy:DIYEntity .
+
+diy:Material a owl:Class ;
+    rdfs:label "Material"@en ;
+    rdfs:subClassOf diy:DIYEntity .
+
+diy:Tool a owl:Class ;
+    rdfs:label "Tool"@en ;
+    rdfs:subClassOf diy:DIYEntity .
+
+diy:DIYEntity a owl:Class ;
+    rdfs:label "DIY Entity"@en .
+
+diy:Project a owl:Class ;
+    rdfs:label "DIY Project"@en ;
+    rdfs:comment "A practical DIY task or project."@en ;
+    rdfs:subClassOf diy:DIYEntity .
+

@@ -1,0 +1,99 @@
+@prefix diy: <https://example.org/diy/garden#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+
+diy:GardenTaxonomy a skos:ConceptScheme ;
+    skos:prefLabel "DIY Garden Taxonomy"@en ;
+    skos:hasTopConcept diy:GardenPlanning, diy:SoilAndCompost,
+        diy:Planting, diy:Watering, diy:GardenTools,
+        diy:GardenMaintenance, diy:PestAndDiseaseManagement,
+        diy:StructuresAndContainers .
+
+diy:GardenPlanning a skos:Concept ;
+    skos:prefLabel "Garden Planning"@en ;
+    skos:broader diy:GardenTaxonomy ;
+    skos:narrower diy:SiteAssessment, diy:GardenLayout, diy:PlantSelection,
+        diy:SeasonalPlanning .
+
+diy:SoilAndCompost a skos:Concept ;
+    skos:prefLabel "Soil and Compost"@en ;
+    skos:broader diy:GardenTaxonomy ;
+    skos:narrower diy:SoilTesting, diy:SoilAmendment, diy:Composting,
+        diy:Mulching .
+
+diy:Planting a skos:Concept ;
+    skos:prefLabel "Planting and Propagation"@en ;
+    skos:broader diy:GardenTaxonomy ;
+    skos:narrower diy:SeedStarting, diy:Transplanting, diy:DirectSowing,
+        diy:Cuttings, diy:Division .
+
+diy:Watering a skos:Concept ;
+    skos:prefLabel "Watering and Irrigation"@en ;
+    skos:broader diy:GardenTaxonomy ;
+    skos:narrower diy:HandWatering, diy:DripIrrigation, diy:SoakerHose,
+        diy:RainwaterCollection .
+
+diy:GardenTools a skos:Concept ;
+    skos:prefLabel "Garden Tools"@en ;
+    skos:broader diy:GardenTaxonomy ;
+    skos:narrower diy:GardenSpade, diy:GardenFork, diy:Hoe,
+        diy:Rake, diy:PruningShears, diy:Wheelbarrow,
+        diy:GardenTrowel, diy:HedgeShears .
+
+diy:GardenMaintenance a skos:Concept ;
+    skos:prefLabel "Garden Maintenance"@en ;
+    skos:broader diy:GardenTaxonomy ;
+    skos:narrower diy:Weeding, diy:Pruning, diy:Mowing,
+        diy:Edging, diy:Mulching, diy:SeasonalCleanup .
+
+diy:PestAndDiseaseManagement a skos:Concept ;
+    skos:prefLabel "Pest and Disease Management"@en ;
+    skos:broader diy:GardenTaxonomy ;
+    skos:narrower diy:PestIdentification, diy:BiologicalControl,
+        diy:PhysicalBarriers, diy:PlantDiseaseMonitoring .
+
+diy:StructuresAndContainers a skos:Concept ;
+    skos:prefLabel "Garden Structures and Containers"@en ;
+    skos:broader diy:GardenTaxonomy ;
+    skos:narrower diy:RaisedBed, diy:Planter, diy:Trellis,
+        diy:ColdFrame, diy:GardenPath, diy:CompostBin .
+
+diy:SiteAssessment a skos:Concept ; skos:prefLabel "Site Assessment"@en ; skos:broader diy:GardenPlanning .
+diy:GardenLayout a skos:Concept ; skos:prefLabel "Garden Layout"@en ; skos:broader diy:GardenPlanning .
+diy:PlantSelection a skos:Concept ; skos:prefLabel "Plant Selection"@en ; skos:broader diy:GardenPlanning .
+diy:SeasonalPlanning a skos:Concept ; skos:prefLabel "Seasonal Planning"@en ; skos:broader diy:GardenPlanning .
+diy:SoilTesting a skos:Concept ; skos:prefLabel "Soil Testing"@en ; skos:broader diy:SoilAndCompost .
+diy:SoilAmendment a skos:Concept ; skos:prefLabel "Soil Amendment"@en ; skos:broader diy:SoilAndCompost .
+diy:Composting a skos:Concept ; skos:prefLabel "Composting"@en ; skos:broader diy:SoilAndCompost, diy:StructuresAndContainers .
+diy:Mulching a skos:Concept ; skos:prefLabel "Mulching"@en ; skos:broader diy:SoilAndCompost, diy:GardenMaintenance .
+diy:SeedStarting a skos:Concept ; skos:prefLabel "Seed Starting"@en ; skos:broader diy:Planting .
+diy:Transplanting a skos:Concept ; skos:prefLabel "Transplanting"@en ; skos:broader diy:Planting .
+diy:DirectSowing a skos:Concept ; skos:prefLabel "Direct Sowing"@en ; skos:broader diy:Planting .
+diy:Cuttings a skos:Concept ; skos:prefLabel "Cuttings"@en ; skos:broader diy:Planting .
+diy:Division a skos:Concept ; skos:prefLabel "Division"@en ; skos:broader diy:Planting .
+diy:HandWatering a skos:Concept ; skos:prefLabel "Hand Watering"@en ; skos:broader diy:Watering .
+diy:DripIrrigation a skos:Concept ; skos:prefLabel "Drip Irrigation"@en ; skos:broader diy:Watering .
+diy:SoakerHose a skos:Concept ; skos:prefLabel "Soaker Hose"@en ; skos:broader diy:Watering .
+diy:RainwaterCollection a skos:Concept ; skos:prefLabel "Rainwater Collection"@en ; skos:broader diy:Watering .
+diy:GardenSpade a skos:Concept ; skos:prefLabel "Garden Spade"@en ; skos:broader diy:GardenTools .
+diy:GardenFork a skos:Concept ; skos:prefLabel "Garden Fork"@en ; skos:broader diy:GardenTools .
+diy:Hoe a skos:Concept ; skos:prefLabel "Hoe"@en ; skos:broader diy:GardenTools .
+diy:Rake a skos:Concept ; skos:prefLabel "Rake"@en ; skos:broader diy:GardenTools .
+diy:PruningShears a skos:Concept ; skos:prefLabel "Pruning Shears"@en ; skos:broader diy:GardenTools .
+diy:Wheelbarrow a skos:Concept ; skos:prefLabel "Wheelbarrow"@en ; skos:broader diy:GardenTools .
+diy:GardenTrowel a skos:Concept ; skos:prefLabel "Garden Trowel"@en ; skos:broader diy:GardenTools .
+diy:HedgeShears a skos:Concept ; skos:prefLabel "Hedge Shears"@en ; skos:broader diy:GardenTools .
+diy:Weeding a skos:Concept ; skos:prefLabel "Weeding"@en ; skos:broader diy:GardenMaintenance .
+diy:Pruning a skos:Concept ; skos:prefLabel "Pruning"@en ; skos:broader diy:GardenMaintenance .
+diy:Mowing a skos:Concept ; skos:prefLabel "Mowing"@en ; skos:broader diy:GardenMaintenance .
+diy:Edging a skos:Concept ; skos:prefLabel "Edging"@en ; skos:broader diy:GardenMaintenance .
+diy:SeasonalCleanup a skos:Concept ; skos:prefLabel "Seasonal Cleanup"@en ; skos:broader diy:GardenMaintenance .
+diy:PestIdentification a skos:Concept ; skos:prefLabel "Pest Identification"@en ; skos:broader diy:PestAndDiseaseManagement .
+diy:BiologicalControl a skos:Concept ; skos:prefLabel "Biological Control"@en ; skos:broader diy:PestAndDiseaseManagement .
+diy:PhysicalBarriers a skos:Concept ; skos:prefLabel "Physical Barriers"@en ; skos:broader diy:PestAndDiseaseManagement .
+diy:PlantDiseaseMonitoring a skos:Concept ; skos:prefLabel "Plant Disease Monitoring"@en ; skos:broader diy:PestAndDiseaseManagement .
+diy:RaisedBed a skos:Concept ; skos:prefLabel "Raised Bed"@en ; skos:broader diy:StructuresAndContainers .
+diy:Planter a skos:Concept ; skos:prefLabel "Planter"@en ; skos:broader diy:StructuresAndContainers .
+diy:Trellis a skos:Concept ; skos:prefLabel "Trellis"@en ; skos:broader diy:StructuresAndContainers .
+diy:ColdFrame a skos:Concept ; skos:prefLabel "Cold Frame"@en ; skos:broader diy:StructuresAndContainers .
+diy:GardenPath a skos:Concept ; skos:prefLabel "Garden Path"@en ; skos:broader diy:StructuresAndContainers .
+diy:CompostBin a skos:Concept ; skos:prefLabel "Compost Bin"@en ; skos:broader diy:StructuresAndContainers .
