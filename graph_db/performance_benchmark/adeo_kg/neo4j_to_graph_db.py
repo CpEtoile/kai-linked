@@ -104,6 +104,8 @@ def export_neo4j_to_graphdb(
     endpoint: str,
     batch_size: int,
     prefix: str,
+    dry_run: bool = False,
+    limit: int | None = None,
 ):
     log.info("Connecting to Neo4j at %s ...", neo4j_uri)
     driver = GraphDatabase.driver(neo4j_uri, auth=(user, password))
@@ -112,15 +114,21 @@ def export_neo4j_to_graphdb(
 
     with driver.session(database=database) as session:
         # 1. Export Nodes -> Turtle triples
-        log.info("--- Phase 1: Exporting Nodes ---")
+        log.info("--- Phase 1: Exporting Nodes %s---", "(DRY RUN) " if dry_run else "")
         offset = 0
         total_nodes = 0
         while True:
+            if limit is not None and total_nodes >= limit:
+                log.info("Reached node limit of %d", limit)
+                break
+            current_batch_limit = (
+                min(batch_size, limit - total_nodes) if limit is not None else batch_size
+            )
             res = session.run(
                 "MATCH (n) RETURN elementId(n) AS id, labels(n) AS labels, properties(n) AS props "
                 "ORDER BY elementId(n) SKIP $offset LIMIT $limit",
                 offset=offset,
-                limit=batch_size,
+                limit=current_batch_limit,
             )
             records = list(res)
             if not records:
@@ -139,23 +147,35 @@ def export_neo4j_to_graphdb(
                         triples.append(f"{s} {map_relation_to_rdf(k, prefix)} {value_to_rdf(v)} .")
 
             if triples:
-                upload_turtle_batch(endpoint, "\n".join(triples))
-                total_nodes += len(records)
-                log.info("  Uploaded %d nodes (total: %d)", len(records), total_nodes)
+                if dry_run:
+                    if total_nodes == 0:
+                        log.info("  [DRY RUN] Sample node triples:\n" + "\n".join(triples[:5]))
+                    total_nodes += len(records)
+                    log.info("  [DRY RUN] Processed %d nodes (total: %d)", len(records), total_nodes)
+                else:
+                    upload_turtle_batch(endpoint, "\n".join(triples))
+                    total_nodes += len(records)
+                    log.info("  Uploaded %d nodes (total: %d)", len(records), total_nodes)
 
-            offset += batch_size
+            offset += len(records)
 
         # 2. Export Relationships -> Turtle triples
-        log.info("--- Phase 2: Exporting Relationships ---")
+        log.info("--- Phase 2: Exporting Relationships %s---", "(DRY RUN) " if dry_run else "")
         offset = 0
         total_rels = 0
         while True:
+            if limit is not None and total_rels >= limit:
+                log.info("Reached relationship limit of %d", limit)
+                break
+            current_batch_limit = (
+                min(batch_size, limit - total_rels) if limit is not None else batch_size
+            )
             res = session.run(
                 "MATCH (a)-[r]->(b) "
                 "RETURN elementId(a) AS src, elementId(b) AS tgt, type(r) AS rel_type, properties(r) AS props "
                 "ORDER BY elementId(r) SKIP $offset LIMIT $limit",
                 offset=offset,
-                limit=batch_size,
+                limit=current_batch_limit,
             )
             records = list(res)
             if not records:
@@ -169,14 +189,25 @@ def export_neo4j_to_graphdb(
                 triples.append(f"{src_uri} {rel_pred} {tgt_uri} .")
 
             if triples:
-                upload_turtle_batch(endpoint, "\n".join(triples))
-                total_rels += len(records)
-                log.info("  Uploaded %d relationships (total: %d)", len(records), total_rels)
+                if dry_run:
+                    if total_rels == 0:
+                        log.info("  [DRY RUN] Sample relationship triples:\n" + "\n".join(triples[:5]))
+                    total_rels += len(records)
+                    log.info("  [DRY RUN] Processed %d relationships (total: %d)", len(records), total_rels)
+                else:
+                    upload_turtle_batch(endpoint, "\n".join(triples))
+                    total_rels += len(records)
+                    log.info("  Uploaded %d relationships (total: %d)", len(records), total_rels)
 
-            offset += batch_size
+            offset += len(records)
 
     driver.close()
-    log.info("=== Migration complete: %d nodes, %d relationships ===", total_nodes, total_rels)
+    log.info(
+        "=== Migration %scomplete: %d nodes, %d relationships ===",
+        "(DRY RUN) " if dry_run else "",
+        total_nodes,
+        total_rels,
+    )
 
 
 def parse_args():
@@ -208,6 +239,17 @@ def parse_args():
         "--prefix",
         default=os.getenv("RDF_PREFIX", "https://opus-adeo.biz/"),
     )
+    p.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Process nodes and relationships without inserting into GraphDB",
+    )
+    p.add_argument(
+        "--limit",
+        type=int,
+        default=None,
+        help="Max number of nodes and relationships to process",
+    )
     return p.parse_args()
 
 
@@ -226,6 +268,8 @@ def main():
         endpoint=args.graphdb_endpoint,
         batch_size=args.batch_size,
         prefix=args.prefix,
+        dry_run=args.dry_run,
+        limit=args.limit,
     )
 
 
