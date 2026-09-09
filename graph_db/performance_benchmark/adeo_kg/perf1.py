@@ -5,7 +5,7 @@ from SPARQLWrapper import SPARQLWrapper, JSON
 
 endpoint = "http://localhost:7200/repositories/test-adeo-kg"
 
-
+# example 5764 Électricité  2719 consommable  840 accessoire
 
 subtree_sparql_from_neo4j = """
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
@@ -13,7 +13,7 @@ PREFIX adeo: <https://opus-adeo.poolparty.biz/COMMONTAXO/>
 
 SELECT DISTINCT ?concept ?parent ?parentCode ?childrenCount ?label
 WHERE {
-  VALUES ?root { adeo:2719 }
+  VALUES ?root { adeo:840 }
 
   ?child a skos:Concept ;
          skos:broader* ?root ;
@@ -27,10 +27,11 @@ WHERE {
     BIND(REPLACE(STR(?parent), "^.*[/#]", "") AS ?parentCode)
   }
 
-  {
+  OPTIONAL {
     SELECT ?child (COUNT(?subChild) AS ?childrenCount)
     WHERE {
       ?subChild skos:broader ?child .
+      ?subChild skos:prefLabel ?subChildLabel .
       FILTER(langMatches(lang(?subChildLabel), "fr"))
     }
     GROUP BY ?child
@@ -38,8 +39,7 @@ WHERE {
 
   BIND(?child AS ?concept)
 }
-ORDER BY ?concept
-"""
+ORDER BY ?childrenCount ?label"""
 
 queries = {
     "simple": """
