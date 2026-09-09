@@ -37,7 +37,7 @@ SKOS_NS = "http://www.w3.org/2004/02/skos/core#"
 LANG_PREFIX_REGEX = re.compile(r"^(EN|FR|RO|ES|PT|IT|DE|NL|PL)_(.+)$", re.IGNORECASE)
 
 
-def node_to_uri(node_id: str, prefix: str) -> str:
+def _node_to_uri(node_id: str, prefix: str) -> str:
     node_id_str = str(node_id).strip()
     if node_id_str.startswith("<") and node_id_str.endswith(">"):
         return node_id_str
@@ -46,7 +46,7 @@ def node_to_uri(node_id: str, prefix: str) -> str:
     return f"<{prefix}node/{node_id_str}>"
 
 
-def value_to_rdf(val, lang: str | None = None) -> str:
+def _value_to_rdf(val, lang: str | None = None) -> str:
     if isinstance(val, bool):
         return f'"{str(val).lower()}"^^<http://www.w3.org/2001/XMLSchema#boolean>'
     if isinstance(val, int):
@@ -60,14 +60,24 @@ def value_to_rdf(val, lang: str | None = None) -> str:
     return f'"{clean}"'
 
 
-EXCLUDED_PROPERTIES = {"embedding"}
+EXCLUDED_PROPERTIES = {"embedding", "properties", "code", "ontologyclass", "semanticnamespace", "conceptschemecode"}
 
 
-def is_property_excluded(prop_name: str) -> bool:
+def _is_property_excluded(prop_name: str) -> bool:
     return prop_name.lower() in EXCLUDED_PROPERTIES
 
 
-def map_class_to_rdf(class_name: str, prefix: str = "") -> str:
+def _is_empty_value(v) -> bool:
+    if v is None:
+        return True
+    if isinstance(v, (list, tuple, set, dict)) and len(v) == 0:
+        return True
+    if isinstance(v, str) and (v.strip() == "" or v.strip() == "[]"):
+        return True
+    return False
+
+
+def _map_class_to_rdf(class_name: str, prefix: str = "") -> str:
     normalized = str(class_name).strip()
     mapping = {
         "ADEO_CONCEPT": f"<{SKOS_NS}Concept>",
@@ -98,11 +108,9 @@ def get_relation_and_lang(rel_name: str, prefix: str = "") -> tuple[str, str | N
         "NARROWER": f"<{SKOS_NS}narrower>",
         "TOP_CONCEPT_OF": f"<{SKOS_NS}topConceptOf>",
         "PREFLABEL": f"<{SKOS_NS}prefLabel>",
-        "PREF_LABEL": f"<{SKOS_NS}prefLabel>",
-        "ALTLABEL": f"<{SKOS_NS}altLabel>",
-        "ALT_LABEL": f"<{SKOS_NS}altLabel>",
+        "ALTLABELS": f"<{SKOS_NS}altLabel>",
+        "HIDDENLABELS": f"<{SKOS_NS}hiddenLabel>",
         "DEFINITION": f"<{SKOS_NS}definition>",
-        "LABEL": f"<{SKOS_NS}prefLabel>",
     }
 
     if key in mapping:
@@ -157,7 +165,7 @@ def export_neo4j_to_graphdb(
                 min(batch_size, limit - total_nodes) if limit is not None else batch_size
             )
             res = session.run(
-                "MATCH (n) RETURN elementId(n) AS id, labels(n) AS labels, properties(n) AS props "
+                "MATCH (n) RETURN n.code AS id, labels(n) AS labels, properties(n) AS props "
                 "ORDER BY elementId(n) SKIP $offset LIMIT $limit",
                 offset=offset,
                 limit=current_batch_limit,
@@ -168,18 +176,22 @@ def export_neo4j_to_graphdb(
 
             triples = []
             for r in records:
-                s = node_to_uri(r["id"], prefix)
+                s = _node_to_uri(r["id"], prefix)
                 for lbl in r["labels"]:
-                    mapped_type = map_class_to_rdf(lbl, prefix)
+                    mapped_type = _map_class_to_rdf(lbl, prefix)
                     triples.append(
                         f"{s} <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> {mapped_type} ."
                     )
                 for k, v in r["props"].items():
-                    if is_property_excluded(k):
+                    if _is_property_excluded(k) or _is_empty_value(v):
                         continue
-                    if v is not None:
-                        pred_uri, lang = get_relation_and_lang(k, prefix)
-                        triples.append(f"{s} {pred_uri} {value_to_rdf(v, lang=lang)} .")
+                    pred_uri, lang = get_relation_and_lang(k, prefix)
+                    if isinstance(v, (list, tuple, set)):
+                        for item in v:
+                            if not _is_empty_value(item):
+                                triples.append(f"{s} {pred_uri} {_value_to_rdf(item, lang=lang)} .")
+                    else:
+                        triples.append(f"{s} {pred_uri} {_value_to_rdf(v, lang=lang)} .")
 
             if triples:
                 if dry_run:
@@ -207,7 +219,7 @@ def export_neo4j_to_graphdb(
             )
             res = session.run(
                 "MATCH (a)-[r]->(b) "
-                "RETURN elementId(a) AS src, elementId(b) AS tgt, type(r) AS rel_type, properties(r) AS props "
+                "RETURN a.code AS src, b.code AS tgt, type(r) AS rel_type, properties(r) AS props "
                 "ORDER BY elementId(r) SKIP $offset LIMIT $limit",
                 offset=offset,
                 limit=current_batch_limit,
@@ -218,8 +230,8 @@ def export_neo4j_to_graphdb(
 
             triples = []
             for r in records:
-                src_uri = node_to_uri(r["src"], prefix)
-                tgt_uri = node_to_uri(r["tgt"], prefix)
+                src_uri = _node_to_uri(r["src"], prefix)
+                tgt_uri = _node_to_uri(r["tgt"], prefix)
                 rel_pred = map_relation_to_rdf(r["rel_type"], prefix)
                 triples.append(f"{src_uri} {rel_pred} {tgt_uri} .")
 
