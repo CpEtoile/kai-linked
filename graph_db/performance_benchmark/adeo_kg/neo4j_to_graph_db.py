@@ -20,9 +20,9 @@ Usage:
 """
 
 import argparse
-import json
 import logging
 import os
+import re
 import sys
 import requests
 from neo4j import GraphDatabase
@@ -34,6 +34,8 @@ logging.basicConfig(
 log = logging.getLogger(__name__)
 
 SKOS_NS = "http://www.w3.org/2004/02/skos/core#"
+LANG_PREFIX_REGEX = re.compile(r"^(EN|FR|RO|ES|PT|IT|DE|NL|PL)_(.+)$", re.IGNORECASE)
+
 
 def node_to_uri(node_id: str, prefix: str) -> str:
     node_id_str = str(node_id).strip()
@@ -44,7 +46,7 @@ def node_to_uri(node_id: str, prefix: str) -> str:
     return f"<{prefix}node/{node_id_str}>"
 
 
-def value_to_rdf(val) -> str:
+def value_to_rdf(val, lang: str | None = None) -> str:
     if isinstance(val, bool):
         return f'"{str(val).lower()}"^^<http://www.w3.org/2001/XMLSchema#boolean>'
     if isinstance(val, int):
@@ -53,6 +55,8 @@ def value_to_rdf(val) -> str:
         return f'"{val}"^^<http://www.w3.org/2001/XMLSchema#double>'
     # String / fallback
     clean = str(val).replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n")
+    if lang:
+        return f'"{clean}"@{lang}'
     return f'"{clean}"'
 
 
@@ -63,9 +67,7 @@ def is_property_excluded(prop_name: str) -> bool:
     return prop_name.lower() in EXCLUDED_PROPERTIES
 
 
-
 def map_class_to_rdf(class_name: str, prefix: str = "") -> str:
-    print(f"Mapping class name: {class_name} with prefix: {prefix}")
     normalized = str(class_name).strip()
     mapping = {
         "ADEO_CONCEPT": f"<{SKOS_NS}Concept>",
@@ -79,24 +81,45 @@ def map_class_to_rdf(class_name: str, prefix: str = "") -> str:
     return f"<{normalized}>"
 
 
-def map_relation_to_rdf(rel_name: str, prefix: str = "") -> str:
-    print(f"Mapping relation name: {rel_name} with prefix: {prefix}")
-
+def get_relation_and_lang(rel_name: str, prefix: str = "") -> tuple[str, str | None]:
     normalized = str(rel_name).strip()
+    lang = None
+
+    matched = LANG_PREFIX_REGEX.match(normalized)
+    if matched:
+        lang = matched.group(1).lower()
+        core_name = matched.group(2)
+    else:
+        core_name = normalized
+
+    key = core_name.upper().replace("-", "_").replace(" ", "_")
     mapping = {
         "BROADER": f"<{SKOS_NS}broader>",
         "NARROWER": f"<{SKOS_NS}narrower>",
         "TOP_CONCEPT_OF": f"<{SKOS_NS}topConceptOf>",
+        "PREFLABEL": f"<{SKOS_NS}prefLabel>",
         "PREF_LABEL": f"<{SKOS_NS}prefLabel>",
+        "ALTLABEL": f"<{SKOS_NS}altLabel>",
         "ALT_LABEL": f"<{SKOS_NS}altLabel>",
+        "DEFINITION": f"<{SKOS_NS}definition>",
         "LABEL": f"<{SKOS_NS}prefLabel>",
     }
-    key = normalized.upper().replace("-", "_").replace(" ", "_")
+
     if key in mapping:
-        return mapping[key]
+        return mapping[key], lang
+
+    full_key = normalized.upper().replace("-", "_").replace(" ", "_")
+    if full_key in mapping:
+        return mapping[full_key], lang
+
     if prefix:
-        return f"<{prefix}rel/{normalized}>"
-    return f"<{normalized}>"
+        return f"<{prefix}rel/{normalized}>", lang
+    return f"<{normalized}>", lang
+
+
+def map_relation_to_rdf(rel_name: str, prefix: str = "") -> str:
+    pred, _ = get_relation_and_lang(rel_name, prefix)
+    return pred
 
 
 def upload_turtle_batch(endpoint: str, turtle_data: str):
@@ -155,7 +178,8 @@ def export_neo4j_to_graphdb(
                     if is_property_excluded(k):
                         continue
                     if v is not None:
-                        triples.append(f"{s} {map_relation_to_rdf(k, prefix)} {value_to_rdf(v)} .")
+                        pred_uri, lang = get_relation_and_lang(k, prefix)
+                        triples.append(f"{s} {pred_uri} {value_to_rdf(v, lang=lang)} .")
 
             if triples:
                 if dry_run:
