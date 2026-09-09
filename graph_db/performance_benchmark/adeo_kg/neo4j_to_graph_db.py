@@ -274,7 +274,7 @@ def parse_args():
         "--graphdb-endpoint",
         default=os.getenv(
             "GRAPHDB_ENDPOINT",
-            "http://localhost:7200/repositories/shacl_employee_demo/statements",
+            "http://localhost:7200/repositories/test-adeo-kg/statements",
         ),
     )
     p.add_argument(
