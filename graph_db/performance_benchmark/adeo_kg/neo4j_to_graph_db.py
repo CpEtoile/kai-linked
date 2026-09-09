@@ -55,6 +55,41 @@ def value_to_rdf(val) -> str:
     return f'"{clean}"'
 
 
+SKOS_NS = "http://www.w3.org/2004/02/skos/core#"
+
+
+def map_class_to_rdf(class_name: str, prefix: str = "") -> str:
+    normalized = str(class_name).strip()
+    mapping = {
+        "ADEO_Concept": f"<{SKOS_NS}Concept>",
+        "ADEO_ConceptScheme": f"<{SKOS_NS}ConceptScheme>",
+    }
+    key = normalized.upper().replace("-", "_").replace(" ", "_")
+    if key in mapping:
+        return mapping[key]
+    if prefix:
+        return f"<{prefix}class/{normalized}>"
+    return f"<{normalized}>"
+
+
+def map_relation_to_rdf(rel_name: str, prefix: str = "") -> str:
+    normalized = str(rel_name).strip()
+    mapping = {
+        "BROADER": f"<{SKOS_NS}broader>",
+        "NARROWER": f"<{SKOS_NS}narrower>",
+        "TOP_CONCEPT_OF": f"<{SKOS_NS}topConceptOf>",
+        "PREF_LABEL": f"<{SKOS_NS}prefLabel>",
+        "ALT_LABEL": f"<{SKOS_NS}altLabel>",
+        "LABEL": f"<{SKOS_NS}prefLabel>",
+    }
+    key = normalized.upper().replace("-", "_").replace(" ", "_")
+    if key in mapping:
+        return mapping[key]
+    if prefix:
+        return f"<{prefix}rel/{normalized}>"
+    return f"<{normalized}>"
+
+
 def upload_turtle_batch(endpoint: str, turtle_data: str):
     headers = {"Content-Type": "text/turtle"}
     resp = requests.post(endpoint, data=turtle_data.encode("utf-8"), headers=headers)
@@ -95,12 +130,13 @@ def export_neo4j_to_graphdb(
             for r in records:
                 s = node_to_uri(r["id"], prefix)
                 for lbl in r["labels"]:
+                    mapped_type = map_class_to_rdf(lbl, prefix)
                     triples.append(
-                        f"{s} <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <{prefix}class/{lbl}> ."
+                        f"{s} <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> {mapped_type} ."
                     )
                 for k, v in r["props"].items():
                     if v is not None:
-                        triples.append(f"{s} <{prefix}prop/{k}> {value_to_rdf(v)} .")
+                        triples.append(f"{s} {map_relation_to_rdf(k, prefix)} {value_to_rdf(v)} .")
 
             if triples:
                 upload_turtle_batch(endpoint, "\n".join(triples))
@@ -129,7 +165,7 @@ def export_neo4j_to_graphdb(
             for r in records:
                 src_uri = node_to_uri(r["src"], prefix)
                 tgt_uri = node_to_uri(r["tgt"], prefix)
-                rel_pred = f"<{prefix}rel/{r['rel_type']}>"
+                rel_pred = map_relation_to_rdf(r["rel_type"], prefix)
                 triples.append(f"{src_uri} {rel_pred} {tgt_uri} .")
 
             if triples:
