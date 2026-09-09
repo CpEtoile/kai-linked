@@ -33,6 +33,7 @@ logging.basicConfig(
 )
 log = logging.getLogger(__name__)
 
+SKOS_NS = "http://www.w3.org/2004/02/skos/core#"
 
 def node_to_uri(node_id: str, prefix: str) -> str:
     node_id_str = str(node_id).strip()
@@ -55,14 +56,20 @@ def value_to_rdf(val) -> str:
     return f'"{clean}"'
 
 
-SKOS_NS = "http://www.w3.org/2004/02/skos/core#"
+EXCLUDED_PROPERTIES = {"embedding"}
+
+
+def is_property_excluded(prop_name: str) -> bool:
+    return prop_name.lower() in EXCLUDED_PROPERTIES
+
 
 
 def map_class_to_rdf(class_name: str, prefix: str = "") -> str:
+    print(f"Mapping class name: {class_name} with prefix: {prefix}")
     normalized = str(class_name).strip()
     mapping = {
-        "ADEO_Concept": f"<{SKOS_NS}Concept>",
-        "ADEO_ConceptScheme": f"<{SKOS_NS}ConceptScheme>",
+        "ADEO_CONCEPT": f"<{SKOS_NS}Concept>",
+        "ADEO_CONCEPT_SCHEME": f"<{SKOS_NS}ConceptScheme>",
     }
     key = normalized.upper().replace("-", "_").replace(" ", "_")
     if key in mapping:
@@ -73,6 +80,8 @@ def map_class_to_rdf(class_name: str, prefix: str = "") -> str:
 
 
 def map_relation_to_rdf(rel_name: str, prefix: str = "") -> str:
+    print(f"Mapping relation name: {rel_name} with prefix: {prefix}")
+
     normalized = str(rel_name).strip()
     mapping = {
         "BROADER": f"<{SKOS_NS}broader>",
@@ -143,6 +152,8 @@ def export_neo4j_to_graphdb(
                         f"{s} <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> {mapped_type} ."
                     )
                 for k, v in r["props"].items():
+                    if is_property_excluded(k):
+                        continue
                     if v is not None:
                         triples.append(f"{s} {map_relation_to_rdf(k, prefix)} {value_to_rdf(v)} .")
 
