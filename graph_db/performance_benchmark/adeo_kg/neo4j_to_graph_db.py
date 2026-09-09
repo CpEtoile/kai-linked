@@ -170,7 +170,7 @@ def parse_args():
     )
     p.add_argument(
         "--prefix",
-        default=os.getenv("RDF_PREFIX", "http://example.org/employee/"),
+        default=os.getenv("RDF_PREFIX", "https://opus-adeo.biz/"),
     )
     return p.parse_args()
 
