@@ -76,16 +76,31 @@ def _is_empty_value(v) -> bool:
         return True
     return False
 
+CLASS_MAPPING = {
+        "ADEO_CONCEPT": f"<{SKOS_NS}Concept>",
+        "ADEO_CONCEPTSCHEME": f"<{SKOS_NS}ConceptScheme>",
+    }
+
+OTHER_MAPPING = {
+        "BROADER": f"<{SKOS_NS}broader>",
+        "NARROWER": f"<{SKOS_NS}narrower>",
+        "TOP_CONCEPT_OF": f"<{SKOS_NS}topConceptOf>",
+        "PREFLABEL": f"<{SKOS_NS}prefLabel>",
+        "ALTLABELS": f"<{SKOS_NS}altLabel>",
+        "HIDDENLABELS": f"<{SKOS_NS}hiddenLabel>",
+        "DEFINITION": f"<{SKOS_NS}definition>",
+    }
+
 
 def _map_class_to_rdf(class_name: str, prefix: str = "") -> str:
     normalized = str(class_name).strip()
-    mapping = {
+    CLASS_MAPPING = {
         "ADEO_CONCEPT": f"<{SKOS_NS}Concept>",
-        "ADEO_CONCEPT_SCHEME": f"<{SKOS_NS}ConceptScheme>",
+        "ADEO_CONCEPTSCHEME": f"<{SKOS_NS}ConceptScheme>",
     }
     key = normalized.upper().replace("-", "_").replace(" ", "_")
-    if key in mapping:
-        return mapping[key]
+    if key in CLASS_MAPPING:
+        return CLASS_MAPPING[key]
     if prefix:
         return f"<{prefix}class/{normalized}>"
     return f"<{normalized}>"
@@ -103,22 +118,12 @@ def get_relation_and_lang(rel_name: str, prefix: str = "") -> tuple[str, str | N
         core_name = normalized
 
     key = core_name.upper().replace("-", "_").replace(" ", "_")
-    mapping = {
-        "BROADER": f"<{SKOS_NS}broader>",
-        "NARROWER": f"<{SKOS_NS}narrower>",
-        "TOP_CONCEPT_OF": f"<{SKOS_NS}topConceptOf>",
-        "PREFLABEL": f"<{SKOS_NS}prefLabel>",
-        "ALTLABELS": f"<{SKOS_NS}altLabel>",
-        "HIDDENLABELS": f"<{SKOS_NS}hiddenLabel>",
-        "DEFINITION": f"<{SKOS_NS}definition>",
-    }
-
-    if key in mapping:
-        return mapping[key], lang
+    if key in OTHER_MAPPING:
+        return OTHER_MAPPING[key], lang
 
     full_key = normalized.upper().replace("-", "_").replace(" ", "_")
-    if full_key in mapping:
-        return mapping[full_key], lang
+    if full_key in OTHER_MAPPING:
+        return OTHER_MAPPING[full_key], lang
 
     if prefix:
         return f"<{prefix}rel/{normalized}>", lang
